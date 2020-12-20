@@ -3,8 +3,14 @@ The purpose of this project is to creat a fully automated paludarium in which my
 
 Variable    |  Type     |  Device
 ------------|-----------|--------------
-temperature |  INPUT    |  DHT11
+temperature |  INPUT    |  DS18B20 digital temperature sensor
 humidity    |  INPUT    |  DHT11
-UV %        |  INPUT    |  [uv sensor]
 pump        |  OUTPUT   |  mini 5V DC water pump (connected to relay)
-heatLamp    |  OUTPUT   |  ceramic heat lamp (connected to relay)
+
+### TO-DO
+A few final touches to make to the project:
+* OLED screen to display current temp, humidity, and relay state
+* edit program so that it logs and saves the data
+* put everything in a box of some sort to protect it from the elements
+* add UV sensor
+* connect lamps
