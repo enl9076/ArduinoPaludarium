@@ -14,3 +14,5 @@ A few final touches to make to the project:
 * put everything in a box of some sort to protect it from the elements
 * add UV sensor
 * connect lamps
+* connect to wifi or bluetooth
+* build app to connect to so that everything can be controlled and monitored remotely
