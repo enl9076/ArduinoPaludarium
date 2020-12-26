@@ -6,7 +6,7 @@ Variable    |  Type     |  Device                                      |  Functi
 temperature |  INPUT    |  DS18B20 digital temperature sensor          |  measure current temperature
 humidity    |  INPUT    |  DHT11                                       |  measure current relative humidity
 uv%         |  INPUT    |  VEML6070                                    |  measure the amnt of UV light
-pump        |  OUTPUT   |  mini 5V DC water pump (connected to relay)  |  spray mist when humidity falls below a certain level
+pump        |  OUTPUT   |  mini 5V DC water pump (connected to relay)  |  spray mist every few hrs & when humidity falls below a certain level
 
 ## Required hardware
 * Arduino Uno R3

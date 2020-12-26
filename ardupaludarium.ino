@@ -14,9 +14,10 @@
 // libraries for the digital temp module
 #include <OneWire.h>
 #include <DallasTemperature.h>
-// libraries for the OLED display
+// libraries for the OLED display and clock
 #include <Wire.h>
 #include <ArducamSSD1306.h>
+#include <TimeAlarms.h>
 
 
 // define pins (temp-->7, dht-->4, relay-->12) and variables
@@ -32,11 +33,12 @@ DHT dht(TempHum, DHTTYPE);
 ArducamSSD1306 display(OLED_RESET);
 Adafruit_VEML6070 uv = Adafruit_VEML6070();
 
-
 /*----------------SETUP-------------------*/
 void setup()
 {
   Serial.begin(9600);
+  setTime(18, 0, 0, 12, 25, 20);
+  Alarm.timerRepeat(10800, Mist); //set the alarm to trigger the relay every 3 hours
   sensors.begin();
   dht.begin();
   uv.begin(VEML6070_1_T);
@@ -55,25 +57,49 @@ void loop()
 {
   sensors.requestTemperatures();
   tempF = sensors.getTempFByIndex(0);
-  float h = dht.readHumidity();
+  int h = dht.readHumidity();
+  int uvVal = 0;
+  uvVal = uvVal + uv.readUV();
   display.begin();
+  digitalClockDisplay();
+  Alarm.delay(5000);
   display.println(F("_Current_"));
   display.print(F("temp: "));
   display.println(tempF);
-  display.print(F("H: "));
+  display.print(F("H:"));
   display.print(h);
-  display.println(F("%"));
-  display.print(F("UV: "));
-  display.println(uv.readUV());
+  display.print(F(","));
+  display.print(F("UV:"));
+  display.println(uvVal);
   display.display();
-  delay(1000);
+  delay(2000);
   if (h < 70)
   {
     digitalWrite(relay, HIGH);
+	  delay(5000);
+	  digitalWrite(relay, LOW);
   }
   else
   {
     digitalWrite(relay, LOW);
   }
 
+}
+
+/*The function that will run when the alarm is triggered*/
+void Mist() {
+	digitalWrite(relay, HIGH);
+	delay(10000);
+	digitalWrite(relay, LOW);
+}
+
+void digitalClockDisplay()
+{
+	// digital clock display of the time
+	display.print(month());
+	display.print(".");
+	display.print(day());
+	display.print(".");
+	display.print(year());
+	display.println();
 }
