@@ -3,7 +3,9 @@
     Created:	1/12/2021 10:51:25 AM
     Author:     DESKTOP-ERACB7G\enl90
 */
-//#include <SPI.h>
+#include <SoftwareSerial.h>
+#include <SPI.h>
+
 
 // libraries & calls for clock and display screen
 #include "RTClib.h"
@@ -45,6 +47,7 @@ DHT dht(tempHum, DHTTYPE);
 const int relay = 31;
 const int touch = 35;
 const int waterPin = A15;
+const int uv = A14;
 
 
 void setup()
@@ -52,7 +55,6 @@ void setup()
   Serial.begin(9600);
   rtc.begin(DateTime(F(__DATE__), F(__TIME__)));
   dht.begin();
-  //sensor_t sensor;
   Wire.begin();
   uint16_t identifier = tft.readID();
   identifier = 0x9341;
@@ -60,6 +62,7 @@ void setup()
   pinMode(relay, OUTPUT);
   pinMode(touch, INPUT);
   pinMode(tempHum, INPUT);
+  pinMode(uv, INPUT);
   tft.begin(identifier);
   tft.fillScreen(BLACK);
   tft.setRotation(1);
@@ -67,14 +70,15 @@ void setup()
 
 void loop()
 {
-	tft.fillScreen(BLACK);
+  tft.fillScreen(BLACK);
+  //GET TIME AND SENSOR VALUES
   getTime();
   float lightIntensity = myBH1750.getLux();
   int water_level = analogRead(waterPin);
-  // Get temperature event and print its value.
-  //sensors_event_t event;
+  int uv_value = analogRead(uv);
   float t = dht.readTemperature(true);
-  //float tF = (t * 1.8) + 32;
+  float h = dht.readHumidity();
+  //PRINT TEMP AND HUMIDITY TO THE SCREEN
   tft.setCursor(2, 40);
   tft.setTextColor(CYAN);
   tft.setTextSize(3);
@@ -83,8 +87,6 @@ void loop()
   tft.setCursor(10, 72);
   tft.print(t);
   tft.print(F(" F"));
-  // Get humidity event and print its value.
-  float h = dht.readHumidity();
   tft.setCursor(130, 40);
   tft.setTextColor(CYAN);
   tft.print(F("Humidity"));
@@ -92,33 +94,38 @@ void loop()
   tft.setCursor(155, 72);
   tft.print(h);
   tft.println(F("%"));
-  // Get light value & print to screen
-  tft.setCursor(80, 105);
+  
+  // PRINT LIGHT VALUES TO THE SCREEN
+  tft.setCursor(15, 120);
   tft.setTextColor(CYAN);
   tft.print(F("Light"));
   tft.setTextColor(WHITE);
-  tft.setCursor(85, 138);
+  tft.setCursor(5, 148);
   tft.print(lightIntensity);
   tft.println(F(" Lux"));
-  // Get water level & print to screen
-  tft.setCursor(20, 160);
+  tft.setTextColor(CYAN);
+  tft.setCursor(170, 120);
+  tft.print(F("UV"));
+  tft.setTextColor(WHITE);
+  tft.setCursor(170, 148);
+  tft.print(uv_value);
+  
+  //PRINT WATER LEVEL TO SCREEN
+  tft.setCursor(20, 190);
   tft.setTextColor(CYAN);
   tft.print("Water Reservoir");
 
-  if(water_level>600){
+  if(water_level<=100){
 	  tft.setTextColor(WHITE);
-    tft.setCursor(70, 180);
+      tft.setCursor(70, 220);
 	  tft.print("GOOD");
-  }else if(water_level>450 && water_level<600){
-	  tft.setTextColor(WHITE);
-    tft.setCursor(70, 180);
-	  tft.print("OK");
   }else{
 	  tft.setTextColor(WHITE);
-    tft.setCursor(70, 180);
+	  tft.setCursor(70, 220);
 	  tft.print("NEED WATER");
   }
-
+  
+  //SET TIMER FOR MISTER
   DateTime now = rtc.now();
   if ((now.hour() == 9 && now.minute()== 0)||(now.hour() == 12 && now.minute()== 0)||(now.hour() == 15 && now.minute()== 0)|| (now.hour() == 18 && now.minute() == 0)){
    digitalWrite(relay, HIGH);
@@ -130,7 +137,7 @@ void loop()
   }else{
     digitalWrite(relay, LOW);
   }
-  delay(5000);
+  delay(2000);
 }
 
 void getTime() {
