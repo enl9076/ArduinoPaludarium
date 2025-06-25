@@ -1,4 +1,4 @@
-# arduPaludarium
+# Automated Paludarium Monitoring
 The purpose of this project is to creat a fully automated paludarium in which my anoles and fish can thrive even when I am not home to monitor things. I am using Arduino Uno along with a variety of sensors. See the table below for specififications. 
 
 Variable    |  Type     |  Device                                      |  Function
